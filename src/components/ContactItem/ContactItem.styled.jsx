@@ -6,5 +6,6 @@ export const ContactItemStyle = styled.li`
     align-items: center;
     width: 400px;
     padding: 10px;
-    border: 1px solid #31d37a;
+    border: 1px solid #c44607;
+    /* border-radius: 5px; */
 `;

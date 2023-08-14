@@ -25,8 +25,8 @@ height: 30px;
 width: 100px;
 padding: 4px;
 font-weight: 500px;
-background-color: #a2fccb;
+background-color: #ec991d;
 &:hover {
-        background-color: #31d37a;
+        background-color: #c44607;
     }
 `;
