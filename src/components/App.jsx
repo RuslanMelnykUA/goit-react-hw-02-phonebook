@@ -1,75 +1,79 @@
-import { Component } from "react";
-import { Form } from "./Form/Form";
-import { nanoid } from 'nanoid'
-import { ContactsList } from "./ContactsList/ContactsList";
-import { Filter } from "./Filter/Filter";
-import { Container } from "./App.styled";
-import { Notify } from 'notiflix/build/notiflix-notify-aio';
-
+import { Component } from 'react';
+import { UserForm } from './UserForm/UserForm';
+import { Contacts } from './Contacts/Contacts';
+import { Filter } from './Filter/Filter';
+import css from './App.module.css';
+import { nanoid } from 'nanoid';
 
 export class App extends Component {
   state = {
     contacts: [
-    {id: 'id-1', name: 'Rosie Simpson', number: '459-12-56'},
-    {id: 'id-2', name: 'Hermione Kline', number: '443-89-12'},
-    {id: 'id-3', name: 'Eden Clements', number: '645-17-79'},
-    {id: 'id-4', name: 'Annie Copeland', number: '227-91-26'},
-  ],
+      { id: 'id-1', name: 'Rosie Simpson', number: '459-12-56' },
+      { id: 'id-2', name: 'Hermione Kline', number: '443-89-12' },
+      { id: 'id-3', name: 'Eden Clements', number: '645-17-79' },
+      { id: 'id-4', name: 'Annie Copeland', number: '227-91-26' },
+    ],
     filter: '',
-  }
+  };
 
-  onSubmitForm = data => {
-    const newObj = { ...data, id: nanoid() };
-    this.setState(({ contacts }) => {
-      if (this.isNameNew(contacts, newObj) === undefined) {
-        return { contacts: [...contacts, newObj] }
-      } else {
-        Notify.warning(`${newObj.name} is already in contacts`, {
-          width: '400px',
-          position: 'center-center',
-          timeout: 3000,
-          fontSize: '20px',
-        });
-        return { contacts: [...contacts] }
-      };
+  createUser = userData => {
+    const isExist = this.state.contacts.find(contact => {
+      return contact.name.toLowerCase() === userData.name.toLowerCase();
     });
-  }
 
-   isNameNew = (contacts, newObj) => {
-     return contacts.find(({ name }) => 
-      name.toLowerCase() === newObj.name.toLowerCase())
-  }
+    if (isExist) {
+      alert(`${userData.name} is already in contacts`);
+      return false;
+    }
 
-  onChangeFilter = (event) => {
-    const {value} = event.currentTarget;
-    this.setState({ filter: value })
-  }
+    const newContact = { ...userData, id: nanoid() };
 
-   filterByName = () => {
-    const { contacts, filter } = this.state;
-    const lowerFilter = filter.toLowerCase();
-    return contacts.filter(({ name }) => 
-      (name.toLowerCase().includes(lowerFilter) ))
-  }
+    this.setState(prevState => {
+        return { contacts: [...prevState.contacts, newContact] };
+      });
 
-  deleteContact = (contactId) => {
-    this.setState(({ contacts }) => ({
-      contacts: contacts.filter(contact => contact.id !== contactId)
+     return true;    
+  };
+
+  getInput = ({ target: { name, value } }) => {
+    this.setState({ [name]: value });
+  };
+
+  filterContacts = () => {
+    this.state.contacts.filter(contact =>
+      contact.name.toLowerCase().includes(this.state.filter.toLowerCase())
+    );
+  };
+
+  deleteContact = contactId => {
+    this.setState(prevState => ({
+      contacts: prevState.contacts.filter(contact => contact.id !== contactId),
     }));
-  }
+  };
+
+  getFilteredContacts = () => {
+    const { filter, contacts } = this.state;
+    return contacts.filter(({ name }) =>
+      name.toLowerCase().includes(filter.toLowerCase())
+    )
+}
 
   render() {
     const { filter } = this.state;
-    const visibleContacts = this.filterByName();
-
+    const filtered = this.getFilteredContacts()
     return (
-      <Container>
+      <div className={css.mainContainer}>
         <h1>Phonebook</h1>
-        <Form onSubmit={this.onSubmitForm} />
+        <UserForm createUser={this.createUser}></UserForm>
+
         <h2>Contacts</h2>
-        <Filter filter={filter} onChangeFilter={this.onChangeFilter} />
-        <ContactsList contacts={visibleContacts} onDeleteContact={this.deleteContact} />
-      </Container>
+        <Filter filter={filter} getInput={this.getInput}></Filter>
+
+        <Contacts
+          contacts={filtered}
+          deleteContact={this.deleteContact}
+        ></Contacts>
+      </div>
     );
-  };
-};
+  }
+}
