@@ -2,7 +2,6 @@ import PropTypes from 'prop-types';
 import css from './UserForm.module.css';
 import { Component } from 'react';
 
-
 export class UserForm extends Component {
   state = {
     name: '',
