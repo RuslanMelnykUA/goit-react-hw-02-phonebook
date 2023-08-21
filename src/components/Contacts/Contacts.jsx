@@ -23,7 +23,7 @@ export const Contacts = ({ contacts, deleteContact }) => {
             number={number}
             id={id}
             deleteContact={deleteContact}
-          ></MarkupContacts>
+          />
         );
       })}
     </ul>
